@@ -107,7 +107,7 @@ void Gameboard::printToConsole() const{
         }
         // printing newline
 		//std::cout << "EXAMPLE LINE" + line <<  std::endl;
-        std::cout << "EXAMPLE LINE"  <<  std::endl;
+        std::cout << "DONT WORRY ABOUT IT"  <<  std::endl;
         line = "";
     }
 }
