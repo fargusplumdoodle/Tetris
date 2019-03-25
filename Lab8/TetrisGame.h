@@ -40,7 +40,7 @@ public:
 
 
 	// destructor, set pointers to null
-	~TetrisGame();								
+	//~TetrisGame();								
 				
 	// draw anything to do with the game,
 	// includes board, currentShape, nextShape, score

@@ -25,6 +25,9 @@ public:
 	TetShape getShape();
 	// returns the shape of Tetromino
 
+	std::vector<Point> getBlockLocs() const;
+	// returns block locs
+
 	void setShape(TetShape shape);
 	// set the shape     
 	//  - clear any blockLocs set previously     

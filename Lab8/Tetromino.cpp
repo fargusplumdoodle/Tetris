@@ -1,7 +1,6 @@
 #include "Tetromino.h"
 #include <iostream>
 #include <string>
-
 // returns color of Tetromino
 TetColor Tetromino::getColor() {
 	return color;
@@ -152,3 +151,7 @@ void Tetromino::printToConsole() const{
 //  ..xx...     
 //  ...x...     
 //  .......
+
+std::vector<Point> Tetromino::getBlockLocs() const{
+	return blockLocs;
+}

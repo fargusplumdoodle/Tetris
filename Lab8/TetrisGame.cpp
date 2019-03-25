@@ -1,7 +1,15 @@
 #include "TetrisGame.h"
 
 // destructor, set pointers to null
-//~TetrisGame();
+//~TetrisGame::TetrisGame() {
+
+
+TetrisGame::TetrisGame(sf::RenderWindow *window, sf::Sprite *blockSprite, Point gameboardOffset, Point nextShapeOffset) {
+	//   assign pointers,
+	//   load font from file: fonts/RedOctober.ttf
+	//   setup scoreText
+	//   reset the game
+}
 
 // draw anything to do with the game,
 // includes board, currentShape, nextShape, score
@@ -113,7 +121,7 @@ bool TetrisGame::isShapeWithinBorders(const GridTetromino &shape) { return true;
 	// return true if the grid content at any of the shape's mapped block locs	
 	//   contains anything other than Gameboard::EMPTY_BLOCK. (false otherwise)	
 	//   hint Use Gameboard's areLocsEmpty() for this.
-bool TetrisGame::doesShapeIntersectLockedBlocks(const GridTetromino &shape) { return true; }
+bool TetrisGame::doesShapeIntersectLockedBlocks(const GridTetromino &shape) { return false; }
 
 	// set secsPerTick 
 	//   - basic: use MAX_SECS_PER_TICK

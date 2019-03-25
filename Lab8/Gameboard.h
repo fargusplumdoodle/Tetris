@@ -66,6 +66,10 @@ public:
 	int getContent(Point pt) const;				// return the content at a given point
     int getContent(int x, int y) const;			// return the content at an x,y grid loc
 
+	void pointValid(Point pt) const;
+	void pointValid(int x, int y) const;
+		// these are for checking if points are inside the game or not
+
 	void setContent(Point pt, int content);		// set the content at a given point
 	void setContent(int x, int y, int content);	// set the content at an x,y grid loc
 	void setContent(std::vector<Point> locs, int content);	// set the content for an array of grid locs

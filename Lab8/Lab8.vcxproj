@@ -20,8 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Gameboard.cpp" />
+    <ClCompile Include="GridTetromino.cpp" />
+    <ClCompile Include="Main.cpp" />
     <ClCompile Include="Point.cpp" />
     <ClCompile Include="SFML_TEST.cpp" />
+    <ClCompile Include="TetrisGame.cpp" />
     <ClCompile Include="Tetromino.cpp" />
   </ItemGroup>
   <ItemGroup>
