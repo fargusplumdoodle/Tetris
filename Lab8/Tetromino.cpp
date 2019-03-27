@@ -82,6 +82,10 @@ void Tetromino::setShape(TetShape shape) {
 	}
 }
 
+TetShape Tetromino::getRandomShape() {
+	return static_cast<TetShape>(rand() % 7);
+}
+
 void Tetromino::rotateCW() {
 	//  - iterate through blockLocs     
 	for (int i = 0; i < blockLocs.size(); i++) {

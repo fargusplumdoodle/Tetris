@@ -24,6 +24,9 @@ public:
 
 	TetShape getShape();
 	// returns the shape of Tetromino
+	
+	static TetShape getRandomShape();
+	// returns a random tetshape
 
 	std::vector<Point> getBlockLocs() const;
 	// returns block locs
@@ -33,6 +36,8 @@ public:
 	//  - clear any blockLocs set previously     
 	//  - set the blockLocs for the shape     
 	//  - set the color for the shape 
+
+	
 
 	void rotateCW();
 	// rotate the shape 90 degrees around [0,0] (clockwise)     

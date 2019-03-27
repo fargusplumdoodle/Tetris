@@ -34,3 +34,4 @@ std::vector<Point> GridTetromino::getBlockLocsMappedToGrid() const {
 	return newLocs;
 
 }
+

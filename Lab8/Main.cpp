@@ -28,8 +28,8 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(640, 800), "Tetris Game Window");
 
 	// set up a tetris game
+	
 	TetrisGame game(&window, &blockSprite, Point(54, 125), Point(490, 210));
-
 
 	sf::Clock clock;	// set up a clock so we can determine seconds per game loop
 

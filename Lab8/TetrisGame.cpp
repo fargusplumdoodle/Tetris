@@ -4,16 +4,33 @@
 //~TetrisGame::TetrisGame() {
 
 
-TetrisGame::TetrisGame(sf::RenderWindow *window, sf::Sprite *blockSprite, Point gameboardOffset, Point nextShapeOffset) {
+TetrisGame::TetrisGame(sf::RenderWindow *window, sf::Sprite *blockSprite, Point gameboardOffsets, Point nextShapeOffsets) {
 	//   assign pointers,
+	pWindow = window;
+	pBlockSprite = blockSprite;
+	gameboardOffset = gameboardOffsets;
+	nextShapeOffset = nextShapeOffsets;
 	//   load font from file: fonts/RedOctober.ttf
+	scoreFont.loadFromFile("fonts/RedOctober.ttf");
 	//   setup scoreText
+	scoreText.setFont(scoreFont);
+	setScore(score);
+
+	//TODO: REMOVE THIS
+	currentShape.setShape(currentShape.getRandomShape());
+	currentShape.setGridLoc(board.getSpawnLoc());
+	std::cout << "SPAWN LOC " << currentShape.getGridLoc().getX()  << " " << currentShape.getGridLoc().getY() << std::endl;
+	std::cout << "OFFSET " << gameboardOffset.getX()  << " " << gameboardOffset.getY() << std::endl;
 	//   reset the game
+	reset();
 }
 
 // draw anything to do with the game,
 // includes board, currentShape, nextShape, score
-void TetrisGame::draw(){}
+void TetrisGame::draw(){
+	drawTetromino(currentShape, currentShape.getGridLoc());
+	drawGameboard();
+}
 
 // Event and game loop processing
 // handles keypress events (up, left, right, down, space)
@@ -38,7 +55,9 @@ void TetrisGame::tick() {}
 void TetrisGame::reset(){}
 
 	// assign nextShape.setShape a new random shape  
-void TetrisGame::pickNextShape(){}
+void TetrisGame::pickNextShape(){
+	nextShape.setShape(nextShape.getRandomShape());
+}
 
 
 	// copy the nextShape into the currentShape and set 
@@ -89,24 +108,52 @@ void TetrisGame::lock(const GridTetromino &shape) {}
 	//   2) set the block loc using pBlockSprite->setPosition()   
 	//	 3) draw the block using Window.draw()
 	// (pointers to window and sprite were passed into the constructor)
-void TetrisGame::drawBlock(int x, int y, TetColor color, Point origin){}
+void TetrisGame::drawBlock(int x, int y, TetColor color, Point origin){
+	//1
+	pBlockSprite->setTextureRect(sf::IntRect((static_cast<int>(color) * BLOCK_WIDTH), 0, BLOCK_WIDTH, BLOCK_HEIGHT));
+	//2
+	pBlockSprite->setPosition((float) (origin.getX() + (x * BLOCK_WIDTH)), (float) (origin.getY() + (y * BLOCK_HEIGHT)));
+	//3
+	pWindow->draw(*pBlockSprite);
+}
 
 	// draw the gameboard blocks on the window
 	//   iterate through each row & col, use drawBlock() to 
 	//   draw a block if it it isn't empty.
-void TetrisGame::drawGameboard(){}
+void TetrisGame::drawGameboard(){
+	for (int y = 0; y < Gameboard::MAX_Y; y++) {
+		for (int x = 0; x < Gameboard::MAX_X; x++) {
+			if (board.getContent(x, y) != Gameboard::EMPTY_BLOCK) {
+				drawBlock(x, y, TetColor::YELLOW, gameboardOffset);
+			}
+		}
+	}
+	
+}
 
 	// draw a tetromino on the window
 	//	 iterate through each mapped loc & drawBlock() for each.
 	//   the origin determines a 'base point' from which to calculate block offsets
 	//   If the Tetromino is on the gameboard: use gameboardOffset (otherwise you 
 	//   can specify another point as the origin - for the nextShape)
-void TetrisGame::drawTetromino(GridTetromino tetromino, Point origin) {}
+void TetrisGame::drawTetromino(GridTetromino tetromino, Point origin) {
+		std::vector<Point> blocks = tetromino.getBlockLocs();
+		Point offSetOrigin = Point((origin.getX() * BLOCK_WIDTH) + gameboardOffset.getX(), (origin.getY() * BLOCK_HEIGHT) + gameboardOffset.getY());
+
+		
+		//	 iterate through each mapped loc & drawBlock() for each.
+		for (int i = 0; i < blocks.size(); i++) {
+			drawBlock(blocks[i].getX(), blocks[i].getY(), tetromino.getColor(), offSetOrigin);
+		}
+}
 
 	// set the score, update the score display
 	// form a string "score: ##" to include the current score
 	// user scoreText.setString() to display it.
-void TetrisGame::setScore(int score) {}
+void TetrisGame::setScore(int score) {
+	std::string label = "score: " + score;
+	scoreText.setString(label);
+}
 
 	// State & gameplay/logic methods ================================
 
