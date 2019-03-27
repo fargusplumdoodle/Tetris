@@ -16,10 +16,6 @@ TetrisGame::TetrisGame(sf::RenderWindow *window, sf::Sprite *blockSprite, Point 
 	scoreText.setFont(scoreFont);
 	setScore(score);
 
-	//TODO: REMOVE THIS
-	currentShape.setShape(currentShape.getRandomShape());
-	currentShape.setGridLoc(board.getSpawnLoc());
-	board.setContent((Gameboard::MAX_X / 2),  Gameboard::MAX_Y / 2, 1);
 	//   reset the game
 	reset();
 }
@@ -45,6 +41,11 @@ void TetrisGame::onKeyPressed(sf::Event event){
 		case sf::Keyboard::Right:
 			attemptMove(currentShape, 1, 0);
 			break;
+		case sf::Keyboard::Down:
+			if (!attemptMove(currentShape, 0, 1)) {
+				lock(currentShape);
+			}
+			break;
 		case sf::Keyboard::Space:
 			drop(currentShape);
 			lock(currentShape);
@@ -60,6 +61,19 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop){
 	else {
 		secondsSinceLastTick += secondsSinceLastLoop;
 	}
+
+	if (shapePlacedSinceLastGameLoop) {
+		if (! spawnNextShape()) {
+			std::cout << "GAME OVER" << std::endl;
+			reset();
+		}
+		else {
+			pickNextShape();
+			score += board.removeCompletedRows();
+			determineSecsPerTick();
+		}
+		shapePlacedSinceLastGameLoop = false;
+	}
 }
 
 // A tick() forces the currentShape to move (if there were no tick,
@@ -70,6 +84,7 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop){
 void TetrisGame::tick() {
 	if (!attemptMove(currentShape, 0, 1)) {
 		lock(currentShape);
+		shapePlacedSinceLastGameLoop = true;
 	}
 	secondsSinceLastTick = 0;
 }
@@ -80,7 +95,19 @@ void TetrisGame::tick() {
 	//  - clear the gameboard,
 	//  - pick & spawn next shape
 	//  - pick next shape again
-void TetrisGame::reset(){}
+void TetrisGame::reset(){
+	//  - setScore to 0
+	score = 0;
+	//  - determineSecondsPerTick(),
+	determineSecsPerTick();
+	//  - clear the gameboard,
+	board.empty();
+	//  - pick & spawn next shape
+	pickNextShape();
+	spawnNextShape();
+	//  - pick next shape again
+	pickNextShape();
+}
 	// assign nextShape.setShape a new random shape  
 void TetrisGame::pickNextShape(){
 	nextShape.setShape(nextShape.getRandomShape());
@@ -90,7 +117,11 @@ void TetrisGame::pickNextShape(){
 	// copy the nextShape into the currentShape and set 
 	//   its loc to be the gameboard's spawn loc.
 	//	 - return true/false based on isPositionLegal()
-bool TetrisGame::spawnNextShape() { return true; }
+bool TetrisGame::spawnNextShape() { 
+	currentShape = nextShape;
+	currentShape.setGridLoc(board.getSpawnLoc());
+	return isPositionLegal(currentShape);
+}
 
 
 
@@ -244,4 +275,7 @@ bool TetrisGame::doesShapeIntersectLockedBlocks(const GridTetromino &shape) {
 	// set secsPerTick 
 	//   - basic: use MAX_SECS_PER_TICK
 	//   - advanced: base it on score (higher score results in lower secsPerTick)
-void TetrisGame::determineSecsPerTick(){}
+void TetrisGame::determineSecsPerTick(){
+	secsPerTick = MAX_SECS_PER_TICK - ((MAX_SECS_PER_TICK - MIN_SECS_PER_TICK) * (score / 100));
+	
+}
