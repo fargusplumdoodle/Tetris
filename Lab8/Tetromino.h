@@ -19,7 +19,7 @@ public:
 		setShape(TetShape::SHAPE_S);
 	}
 
-	TetColor getColor(); 
+	TetColor getColor() const; 
 	// returns color of Tetromino
 
 	TetShape getShape();

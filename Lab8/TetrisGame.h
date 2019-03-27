@@ -110,6 +110,7 @@ private:
 	//	 2) iterate on the mapped block locs and copy the contents (color) 
 	//      of each to the grid (via gameboard.setGridContent()) 
 	void lock(const GridTetromino &shape);
+	//void lock(GridTetromino &shape);
 	
 	// Graphics methods ==============================================
 	

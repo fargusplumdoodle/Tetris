@@ -19,8 +19,7 @@ TetrisGame::TetrisGame(sf::RenderWindow *window, sf::Sprite *blockSprite, Point 
 	//TODO: REMOVE THIS
 	currentShape.setShape(currentShape.getRandomShape());
 	currentShape.setGridLoc(board.getSpawnLoc());
-	std::cout << "SPAWN LOC " << currentShape.getGridLoc().getX()  << " " << currentShape.getGridLoc().getY() << std::endl;
-	std::cout << "OFFSET " << gameboardOffset.getX()  << " " << gameboardOffset.getY() << std::endl;
+	board.setContent((Gameboard::MAX_X / 2),  Gameboard::MAX_Y / 2, 1);
 	//   reset the game
 	reset();
 }
@@ -46,18 +45,34 @@ void TetrisGame::onKeyPressed(sf::Event event){
 		case sf::Keyboard::Right:
 			attemptMove(currentShape, 1, 0);
 			break;
+		case sf::Keyboard::Space:
+			drop(currentShape);
+			lock(currentShape);
+			break;
 	}
 }
 
 // called every game loop to handle ticks & tetromino placement (locking)
-void TetrisGame::processGameLoop(float secondsSinceLastLoop){}
+void TetrisGame::processGameLoop(float secondsSinceLastLoop){
+	if (secondsSinceLastTick >= secsPerTick) {
+		tick();
+	}
+	else {
+		secondsSinceLastTick += secondsSinceLastLoop;
+	}
+}
 
 // A tick() forces the currentShape to move (if there were no tick,
 // the currentShape would float in position forever). This should
 // call attemptMove() on the currentShape.  If not successful, lock() 
 // the currentShape (it can move no further), and record the fact that a
 // shape was placed (using shapePlacedSinceLastGameLoop)
-void TetrisGame::tick() {}
+void TetrisGame::tick() {
+	if (!attemptMove(currentShape, 0, 1)) {
+		lock(currentShape);
+	}
+	secondsSinceLastTick = 0;
+}
 
 	// reset everything for a new game (use existing functions) 
 	//  - setScore to 0
@@ -66,7 +81,6 @@ void TetrisGame::tick() {}
 	//  - pick & spawn next shape
 	//  - pick next shape again
 void TetrisGame::reset(){}
-
 	// assign nextShape.setShape a new random shape  
 void TetrisGame::pickNextShape(){
 	nextShape.setShape(nextShape.getRandomShape());
@@ -123,13 +137,22 @@ bool TetrisGame::attemptMove(GridTetromino &shape, int x, int y) {
 
 	// drops the tetromino vertically as far as it can 
 	//   legally go.  Use attemptMove(). This can be done in 1 line.
-void TetrisGame::drop(GridTetromino &shape){}
+void TetrisGame::drop(GridTetromino &shape){
+	for (int i = 0; i <= Gameboard::MAX_Y; i++) {
+		if (! attemptMove(currentShape, 0, 1)) {
+			break;
+		}		
+	}
+}
 
 	// copy the contents of the tetromino's mapped block locs to the grid.
 	//	 1) get current blockshape locs via tetromino.getBlockLocsMappedToGrid()
 	//	 2) iterate on the mapped block locs and copy the contents (color) 
 	//      of each to the grid (via gameboard.setGridContent()) 
-void TetrisGame::lock(const GridTetromino &shape) {}
+void TetrisGame::lock(const GridTetromino &shape) {
+	// std::cout << static_cast<int>(shape.getColor()) << std::endl;
+	board.setContent(shape.getBlockLocsMappedToGrid(), static_cast<int>(shape.getColor()));
+}
 
 	// Graphics methods ==============================================
 
@@ -194,6 +217,8 @@ void TetrisGame::setScore(int score) {
 	//	 and doesn't intersect locked blocks (doesShapeIntersectLockedBlocks)
 bool TetrisGame::isPositionLegal(const GridTetromino &shape) { 
 	if (!isShapeWithinBorders(shape)) { return false; }
+	if (!doesShapeIntersectLockedBlocks(shape)) { return false; }
+	return true;
 }
 
 	// return true if the shape is within the left, right,
@@ -201,9 +226,9 @@ bool TetrisGame::isPositionLegal(const GridTetromino &shape) {
 bool TetrisGame::isShapeWithinBorders(const GridTetromino &shape) {
 	std::vector<Point> blocks = shape.getBlockLocsMappedToGrid();
 	for (int i = 0; i < blocks.size(); i++) {
-		if ((blocks[i].getX() > board.MAX_X - 1) || (blocks[i].getX() < 0)) {
+		if ((blocks[i].getX() >= board.MAX_X) || (blocks[i].getX() < 0)) {
 			return false; }
-		if ((blocks[i].getY() > board.MAX_Y) || (blocks[i].getY() < 0)) {
+		if ((blocks[i].getY() >= board.MAX_Y) || (blocks[i].getY() < 0)) {
 			return false; }
 	}
 	return true;

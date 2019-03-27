@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 // returns color of Tetromino
-TetColor Tetromino::getColor() {
+TetColor Tetromino::getColor() const{
 	return color;
 }
 
