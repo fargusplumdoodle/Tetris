@@ -139,7 +139,7 @@ private:
 	// set the score, update the score display
 	// form a string "score: ##" to include the current score
 	// user scoreText.setString() to display it.
-	void setScore(int score);
+	void setScore(int new_score);
 
 	// State & gameplay/logic methods ================================
 

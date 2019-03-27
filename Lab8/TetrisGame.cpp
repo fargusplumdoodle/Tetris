@@ -23,7 +23,12 @@ TetrisGame::TetrisGame(sf::RenderWindow *window, sf::Sprite *blockSprite, Point 
 // draw anything to do with the game,
 // includes board, currentShape, nextShape, score
 void TetrisGame::draw(){
-	drawTetromino(currentShape, currentShape.getGridLoc());
+
+	Point origin = currentShape.getGridLoc();
+	Point offSetOrigin = Point((origin.getX() * BLOCK_WIDTH) + gameboardOffset.getX(), (origin.getY() * BLOCK_HEIGHT) + gameboardOffset.getY());
+
+	drawTetromino(currentShape, offSetOrigin);
+	drawTetromino(nextShape, nextShapeOffset);
 	drawGameboard();
 }
 
@@ -69,7 +74,7 @@ void TetrisGame::processGameLoop(float secondsSinceLastLoop){
 		}
 		else {
 			pickNextShape();
-			score += board.removeCompletedRows();
+			setScore(board.removeCompletedRows());
 			determineSecsPerTick();
 		}
 		shapePlacedSinceLastGameLoop = false;
@@ -225,20 +230,21 @@ void TetrisGame::drawGameboard(){
 	//   can specify another point as the origin - for the nextShape)
 void TetrisGame::drawTetromino(GridTetromino tetromino, Point origin) {
 		std::vector<Point> blocks = tetromino.getBlockLocs();
-		Point offSetOrigin = Point((origin.getX() * BLOCK_WIDTH) + gameboardOffset.getX(), (origin.getY() * BLOCK_HEIGHT) + gameboardOffset.getY());
 
 		
 		//	 iterate through each mapped loc & drawBlock() for each.
 		for (int i = 0; i < blocks.size(); i++) {
-			drawBlock(blocks[i].getX(), blocks[i].getY(), tetromino.getColor(), offSetOrigin);
+			drawBlock(blocks[i].getX(), blocks[i].getY(), tetromino.getColor(), origin);
 		}
 }
 
 	// set the score, update the score display
 	// form a string "score: ##" to include the current score
 	// user scoreText.setString() to display it.
-void TetrisGame::setScore(int score) {
-	std::string label = "score: " + score;
+void TetrisGame::setScore(int new_score) {
+	score += new_score;
+	std::string label = "Score: " + score;
+	std::cout << "Score: " << score << std::endl;
 	scoreText.setString(label);
 }
 
@@ -276,6 +282,6 @@ bool TetrisGame::doesShapeIntersectLockedBlocks(const GridTetromino &shape) {
 	//   - basic: use MAX_SECS_PER_TICK
 	//   - advanced: base it on score (higher score results in lower secsPerTick)
 void TetrisGame::determineSecsPerTick(){
-	secsPerTick = MAX_SECS_PER_TICK - ((MAX_SECS_PER_TICK - MIN_SECS_PER_TICK) * (score / 100));
+	secsPerTick = MAX_SECS_PER_TICK - ((MAX_SECS_PER_TICK - MIN_SECS_PER_TICK) * (static_cast<double>(score) / 66.0));
 	
 }
