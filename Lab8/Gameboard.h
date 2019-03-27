@@ -122,7 +122,8 @@ private:
 
     int grid[MAX_X][MAX_Y];				// the gameboard - a grid of X and Y offsets.  
 										//  ([0][0] is top left, [MAX_X][MAX_Y] is bottom right)  
-	const Point spawnLoc {MAX_X/2, 0};	// the gameboard offset to spawn a new tetromino at.	
+	//const Point spawnLoc {MAX_X/2, 0};	// the gameboard offset to spawn a new tetromino at.	
+	const Point spawnLoc {MAX_X/2, 1};	// I set this so the pieces start in legal positions 
 
 	// FRIENDS
 	friend class TestSuite;				// for testing purposes (allows TestSuite to access private members of this class)

@@ -34,7 +34,13 @@ void TetrisGame::draw(){
 
 // Event and game loop processing
 // handles keypress events (up, left, right, down, space)
-void TetrisGame::onKeyPressed(sf::Event event){}
+void TetrisGame::onKeyPressed(sf::Event event){
+	// handling rotation
+	if (event.key.code == sf::Keyboard::Up) {
+		attemptRotate(currentShape);
+	}
+	std::cout << "Keypressed:" << event.KeyPressed << std::endl;
+}
 
 // called every game loop to handle ticks & tetromino placement (locking)
 void TetrisGame::processGameLoop(float secondsSinceLastLoop){}
@@ -75,7 +81,17 @@ bool TetrisGame::spawnNextShape() { return true; }
 	//	 3) test if temp rotatio was legal (isPositionLegal()), 
 	//      if so - rotate the original tetromino.
 	//	 4) return true/false to indicate successful movement
-bool TetrisGame::attemptRotate(GridTetromino &shape) { return true; }
+bool TetrisGame::attemptRotate(GridTetromino &shape) { 
+
+	GridTetromino tmp = shape;
+	tmp.rotateCW();
+
+	if (isPositionLegal(tmp)) {
+		shape.rotateCW();
+		return true;
+	} 
+	return false; 
+}
 
 
 	// test if a move is legal on the tetromino, if so, move it.
@@ -159,7 +175,19 @@ void TetrisGame::setScore(int score) {
 
 	// return true if shape is within borders (isShapeWithinBorders())
 	//	 and doesn't intersect locked blocks (doesShapeIntersectLockedBlocks)
-bool TetrisGame::isPositionLegal(const GridTetromino &shape) { return true; }
+bool TetrisGame::isPositionLegal(const GridTetromino &shape) { 
+	std::vector<Point> blocks = shape.getBlockLocsMappedToGrid();
+	for (int i = 0; i < blocks.size(); i++) {
+		std::cout << "i: " << i << " Point: " << blocks[i].toString() << std::endl;
+		if ((blocks[i].getX() > board.MAX_X) || (blocks[i].getX() < 0)) {
+			std::cout << "SHAPES X VALUE INVALID: " << blocks[i].toString() << std::endl;
+			return false; }
+		if ((blocks[i].getY() > board.MAX_Y) || (blocks[i].getY() < 0)) {
+			std::cout << "SHAPES Y VALUE INVALID: "  << blocks[i].toString() << std::endl;
+			return false; }
+	}
+	return true;
+}
 
 	// return true if the shape is within the left, right,
 	//	 and lower border of the grid. (false otherwise)
