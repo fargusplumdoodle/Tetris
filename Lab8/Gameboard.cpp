@@ -70,7 +70,7 @@ bool Gameboard::areLocsEmpty(std::vector<Point> locs) const {
         }
 
         // point is valid
-        if ( getContent(locs[i]) != -1 ) {
+        if ( getContent(locs[i]) != EMPTY_BLOCK ) {
 
             // point is not empty
             return false;

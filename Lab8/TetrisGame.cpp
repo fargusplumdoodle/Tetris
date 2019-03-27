@@ -36,10 +36,17 @@ void TetrisGame::draw(){
 // handles keypress events (up, left, right, down, space)
 void TetrisGame::onKeyPressed(sf::Event event){
 	// handling rotation
-	if (event.key.code == sf::Keyboard::Up) {
-		attemptRotate(currentShape);
+	switch (event.key.code) {
+		case sf::Keyboard::Up:
+			attemptRotate(currentShape);
+			break;
+		case sf::Keyboard::Left:
+			attemptMove(currentShape, -1, 0);
+			break;
+		case sf::Keyboard::Right:
+			attemptMove(currentShape, 1, 0);
+			break;
 	}
-	std::cout << "Keypressed:" << event.KeyPressed << std::endl;
 }
 
 // called every game loop to handle ticks & tetromino placement (locking)
@@ -101,7 +108,17 @@ bool TetrisGame::attemptRotate(GridTetromino &shape) {
 	//	 3) test if temp move was legal (isPositionLegal(),
 	//      if so - move the original.
 	//	 4) return true/false to indicate successful movement
-bool TetrisGame::attemptMove(GridTetromino &shape, int x, int y) { return true; }
+bool TetrisGame::attemptMove(GridTetromino &shape, int x, int y) { 
+	GridTetromino tmp = shape;
+	tmp.move(x, y);
+
+	if (isPositionLegal(tmp)) {
+		shape.move(x, y);
+		return true;
+	}
+
+	return false;
+}
 
 
 	// drops the tetromino vertically as far as it can 
@@ -176,27 +193,28 @@ void TetrisGame::setScore(int score) {
 	// return true if shape is within borders (isShapeWithinBorders())
 	//	 and doesn't intersect locked blocks (doesShapeIntersectLockedBlocks)
 bool TetrisGame::isPositionLegal(const GridTetromino &shape) { 
-	std::vector<Point> blocks = shape.getBlockLocsMappedToGrid();
-	for (int i = 0; i < blocks.size(); i++) {
-		std::cout << "i: " << i << " Point: " << blocks[i].toString() << std::endl;
-		if ((blocks[i].getX() > board.MAX_X) || (blocks[i].getX() < 0)) {
-			std::cout << "SHAPES X VALUE INVALID: " << blocks[i].toString() << std::endl;
-			return false; }
-		if ((blocks[i].getY() > board.MAX_Y) || (blocks[i].getY() < 0)) {
-			std::cout << "SHAPES Y VALUE INVALID: "  << blocks[i].toString() << std::endl;
-			return false; }
-	}
-	return true;
+	if (!isShapeWithinBorders(shape)) { return false; }
 }
 
 	// return true if the shape is within the left, right,
 	//	 and lower border of the grid. (false otherwise)
-bool TetrisGame::isShapeWithinBorders(const GridTetromino &shape) { return true; }
+bool TetrisGame::isShapeWithinBorders(const GridTetromino &shape) {
+	std::vector<Point> blocks = shape.getBlockLocsMappedToGrid();
+	for (int i = 0; i < blocks.size(); i++) {
+		if ((blocks[i].getX() > board.MAX_X - 1) || (blocks[i].getX() < 0)) {
+			return false; }
+		if ((blocks[i].getY() > board.MAX_Y) || (blocks[i].getY() < 0)) {
+			return false; }
+	}
+	return true;
+	}
 
 	// return true if the grid content at any of the shape's mapped block locs	
 	//   contains anything other than Gameboard::EMPTY_BLOCK. (false otherwise)	
 	//   hint Use Gameboard's areLocsEmpty() for this.
-bool TetrisGame::doesShapeIntersectLockedBlocks(const GridTetromino &shape) { return false; }
+bool TetrisGame::doesShapeIntersectLockedBlocks(const GridTetromino &shape) {
+	return board.areLocsEmpty(shape.getBlockLocsMappedToGrid());
+}
 
 	// set secsPerTick 
 	//   - basic: use MAX_SECS_PER_TICK
