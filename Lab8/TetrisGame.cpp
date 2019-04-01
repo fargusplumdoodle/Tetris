@@ -1,5 +1,9 @@
 #include "TetrisGame.h"
 
+// ISSUES:
+//	1. all blocks lock as yellow
+//  2. score text sucks, then randomly turns into C:\Program etc.
+
 // destructor, set pointers to null
 //~TetrisGame::TetrisGame() {
 
@@ -11,11 +15,13 @@ TetrisGame::TetrisGame(sf::RenderWindow *window, sf::Sprite *blockSprite, Point 
 	gameboardOffset = gameboardOffsets;
 	nextShapeOffset = nextShapeOffsets;
 	//   load font from file: fonts/RedOctober.ttf
-	scoreFont.loadFromFile("fonts/RedOctober.ttf");
 	//   setup scoreText
+	scoreFont.loadFromFile("fonts/RedOctober.ttf");
 	scoreText.setFont(scoreFont);
-	setScore(score);
-
+	scoreText.setCharacterSize(20);
+	scoreText.setFillColor(sf::Color::White);
+	scoreText.setPosition(435, 325);
+	setScore(0);
 	//   reset the game
 	reset();
 }
@@ -29,6 +35,9 @@ void TetrisGame::draw(){
 
 	drawTetromino(currentShape, offSetOrigin);
 	drawTetromino(nextShape, nextShapeOffset);
+
+	pWindow->draw(scoreText);
+
 	drawGameboard();
 }
 
@@ -216,7 +225,7 @@ void TetrisGame::drawGameboard(){
 	for (int y = 0; y < Gameboard::MAX_Y; y++) {
 		for (int x = 0; x < Gameboard::MAX_X; x++) {
 			if (board.getContent(x, y) != Gameboard::EMPTY_BLOCK) {
-				drawBlock(x, y, TetColor::YELLOW, gameboardOffset);
+				drawBlock(x, y, static_cast<TetColor>(board.getContent(x, y)), gameboardOffset);
 			}
 		}
 	}
@@ -243,8 +252,7 @@ void TetrisGame::drawTetromino(GridTetromino tetromino, Point origin) {
 	// user scoreText.setString() to display it.
 void TetrisGame::setScore(int new_score) {
 	score += new_score;
-	std::string label = "Score: " + score;
-	std::cout << "Score: " << score << std::endl;
+	std::string label = "score: " + std::to_string(score);
 	scoreText.setString(label);
 }
 
